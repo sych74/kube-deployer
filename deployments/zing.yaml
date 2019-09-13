@@ -18,17 +18,13 @@ spec:
         k8s-app: java-zing
         app: java
     spec:
-      volumes:
-      - name: dshm
-        emptyDir:
-          medium: Memory
       containers:
         - name: java-zing
           image: devbeta/javaengine:zing-11.0.0
           imagePullPolicy: Always
-          volumeMounts:
-            - mountPath: /dev/shm
-              name: dshm
+          resources:
+            limits:
+              memory: %MEM_LIMIT%
           command: ["/bin/bash", "-c", "curl -L https://github.com/jelastic/java-vertical-scaling-test/raw/master/dist/app.jar --output app.jar && sleep 10 && echo -ne '\n' | java %JAVA_OPTS% -jar app.jar 30"]
       nodeSelector:
         java: zing
