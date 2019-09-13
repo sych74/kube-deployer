@@ -111,19 +111,19 @@ actions:
           displayName: zingNode
 
   deploy:
-    - cmd [${nodes.k8sm.master.id}]:
-      - kubectl create namespace java || true
-      - kubectl delete deployment --force --grace-period=0 -l=app=java -n java || true
-      - kubectl delete pods -n java $(kubectl get pods -l=app=java -n java --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' | awk '{print $1}') --force --grace-period=0 || true
-      - wget ${baseUrl}/java-dashboard.json
-      - export grafana_secret=$(kubectl get secret --namespace kubernetes-monitoring monitoring-grafana -o jsonpath='{.data.admin-password}' | base64 --decode ; echo)
-      - curl -s -k -u "admin:${grafana_secret}" -X POST -H "Accept: application/json" -H "Content-Type: application/json" -d @java-dashboard.json  http://${env.domain}/grafana/api/dashboards/db/
-      - curl ${baseUrl}/deployments/adoptopenjdk.yaml | sed "s/%JAVA_OPTS%/${globals.common} ${globals.adoptopenjdk}/g" | sed "s/%MEM_LIMIT%/${settings.adoptopenjdkLimit}/g" | kubectl apply -f -
-      - curl ${baseUrl}/deployments/libericajdk12.yaml | sed "s/%JAVA_OPTS%/${globals.common} ${globals.liberica}/g" | sed "s/%MEM_LIMIT%/${settings.libericaLimit}/g" | kubectl apply -f -
-      - curl ${baseUrl}/deployments/openj9.yaml | sed "s/%JAVA_OPTS%/${globals.common} ${globals.openj9}/g" | sed "s/%MEM_LIMIT%/${settings.openj9Limit}/g" | kubectl apply -f -
-      - curl ${baseUrl}/deployments/openjdk13.yaml | sed "s/%JAVA_OPTS%/${globals.common} ${globals.openjdk}/g" | sed "s/%MEM_LIMIT%/${settings.openjdkLimit}/g" | kubectl apply -f -
-      - curl ${baseUrl}/deployments/zulujdk.yaml | sed "s/%JAVA_OPTS%/${globals.common} ${globals.zulujdk}/g" | sed "s/%MEM_LIMIT%/${settings.zulujdkLimit}/g" | kubectl apply -f -
-      - curl ${baseUrl}/deployments/zing.yaml | sed "s/%JAVA_OPTS%/${globals.common} ${globals.zing}/g" | sed "s/%MEM_LIMIT%/${settings.zingLimit}/g" | kubectl apply -f -
+    - cmd [${nodes.k8sm.master.id}]: |-
+       kubectl create namespace java || true
+       kubectl delete deployment --force --grace-period=0 -l=app=java -n java || true
+       kubectl delete pods -n java $(kubectl get pods -l=app=java -n java --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' | awk '{print $1}') --force --grace-period=0 || true
+       wget ${baseUrl}/java-dashboard.json
+       export grafana_secret=$(kubectl get secret --namespace kubernetes-monitoring monitoring-grafana -o jsonpath='{.data.admin-password}' | base64 --decode ; echo)
+       curl -s -k -u 'admin:${grafana_secret}' -X POST -H "Accept: application/json" -H "Content-Type: application/json" -d @java-dashboard.json  http://${env.domain}/grafana/api/dashboards/db/
+       curl ${baseUrl}/deployments/adoptopenjdk.yaml | sed "s/%JAVA_OPTS%/${globals.common} ${globals.adoptopenjdk}/g" | sed "s/%MEM_LIMIT%/${settings.adoptopenjdkLimit}/g" | kubectl apply -f -
+       curl ${baseUrl}/deployments/libericajdk12.yaml | sed "s/%JAVA_OPTS%/${globals.common} ${globals.liberica}/g" | sed "s/%MEM_LIMIT%/${settings.libericaLimit}/g" | kubectl apply -f -
+       curl ${baseUrl}/deployments/openj9.yaml | sed "s/%JAVA_OPTS%/${globals.common} ${globals.openj9}/g" | sed "s/%MEM_LIMIT%/${settings.openj9Limit}/g" | kubectl apply -f -
+       curl ${baseUrl}/deployments/openjdk13.yaml | sed "s/%JAVA_OPTS%/${globals.common} ${globals.openjdk}/g" | sed "s/%MEM_LIMIT%/${settings.openjdkLimit}/g" | kubectl apply -f -
+       curl ${baseUrl}/deployments/zulujdk.yaml | sed "s/%JAVA_OPTS%/${globals.common} ${globals.zulujdk}/g" | sed "s/%MEM_LIMIT%/${settings.zulujdkLimit}/g" | kubectl apply -f -
+       curl ${baseUrl}/deployments/zing.yaml | sed "s/%JAVA_OPTS%/${globals.common} ${globals.zing}/g" | sed "s/%MEM_LIMIT%/${settings.zingLimit}/g" | kubectl apply -f -
 
   getPods:
       - cmd[${nodes.k8sm.master.id}]: kubectl get pods -l=k8s-app=java-zulujdk -n java --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' | awk '{print $1}'
