@@ -117,7 +117,7 @@ actions:
       - kubectl delete pods -n java $(kubectl get pods -l=app=java -n java --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' | awk '{print $1}') --force --grace-period=0 || true
       - yum install epel-release -y
       - yum install jq -y
-      - curl ${baseUrl}/scripts/grafana.sh | bash -s {env.url}graphana
+      - curl ${baseUrl}/scripts/grafana.sh | bash -s http://${env.domain}/grafana
       - curl ${baseUrl}/deployments/adoptopenjdk.yaml | sed "s/%JAVA_OPTS%/${globals.common} ${globals.adoptopenjdk}/g" | sed "s/%MEM_LIMIT%/${settings.adoptopenjdkLimit}/g" | kubectl apply -f -
       - curl ${baseUrl}/deployments/libericajdk12.yaml | sed "s/%JAVA_OPTS%/${globals.common} ${globals.liberica}/g" | sed "s/%MEM_LIMIT%/${settings.libericaLimit}/g" | kubectl apply -f -
       - curl ${baseUrl}/deployments/openj9.yaml | sed "s/%JAVA_OPTS%/${globals.common} ${globals.openj9}/g" | sed "s/%MEM_LIMIT%/${settings.openj9Limit}/g" | kubectl apply -f -
