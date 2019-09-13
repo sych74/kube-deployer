@@ -117,7 +117,7 @@ actions:
        kubectl delete pods -n java $(kubectl get pods -l=app=java -n java --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' | awk '{print $1}') --force --grace-period=0 || true
        wget ${baseUrl}/java-dashboard.json
        export grafana_secret=$(kubectl get secret --namespace kubernetes-monitoring monitoring-grafana -o jsonpath='{.data.admin-password}' | base64 --decode ; echo)
-       curl -s -k -u 'admin:${grafana_secret}' -X POST -H "Accept: application/json" -H "Content-Type: application/json" -d @java-dashboard.json  http://${env.domain}/grafana/api/dashboards/db/
+       curl -s -k -u "admin:${grafana_secret}" -X POST -H "Accept: application/json" -H "Content-Type: application/json" -d @java-dashboard.json  http://${env.domain}/grafana/api/dashboards/db/
        curl ${baseUrl}/deployments/adoptopenjdk.yaml | sed "s/%JAVA_OPTS%/${globals.common} ${globals.adoptopenjdk}/g" | sed "s/%MEM_LIMIT%/${settings.adoptopenjdkLimit}/g" | kubectl apply -f -
        curl ${baseUrl}/deployments/libericajdk12.yaml | sed "s/%JAVA_OPTS%/${globals.common} ${globals.liberica}/g" | sed "s/%MEM_LIMIT%/${settings.libericaLimit}/g" | kubectl apply -f -
        curl ${baseUrl}/deployments/openj9.yaml | sed "s/%JAVA_OPTS%/${globals.common} ${globals.openj9}/g" | sed "s/%MEM_LIMIT%/${settings.openj9Limit}/g" | kubectl apply -f -
@@ -154,8 +154,5 @@ actions:
 
               Get logs: `kubectl logs -f $deploymentName -n java`
 
-              For monitoring Navigate to Grafana [${env.url}grafana/dashboards](${env.url}grafana/dashboards):
-
-              * Kubernetes App Metrics: CPU and RAM utilization per pod (choose Java namespace)
-              * Cluster Monitoring for Kubernetes: overall RAM utilization. Click on Java pods to eliminate others
+              For monitoring Navigate to Grafana [${env.url}grafana/dashboards](${env.url}grafana/dashboards) and select Java dashboard
 success: ${globals.success}
