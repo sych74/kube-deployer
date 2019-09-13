@@ -150,7 +150,9 @@ actions:
 
               Get pods: `kubectl get pods -n java`
 
-              Get logs: `kubectl logs -f $podName -n java`
+              Get deployments: `kubectl get deployments -n java`
+
+              Get logs: `kubectl logs -f $deploymentName -n java`
 
               For monitoring Navigate to Grafana [${env.url}grafana/dashboards](${env.url}grafana/dashboards):
 
