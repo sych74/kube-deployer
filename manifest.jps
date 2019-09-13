@@ -8,6 +8,10 @@ description: |
     * OpenJ9
     * Epsilon @ Zulu
 
+    **Important!** Apply this Add-On to a Kubernetes Cluster with **6** worker nodes.
+    Each pod is deployed to its dedicated labeled node to easily track memory utilization.
+
+
 name: Java Vertical Scaling on Kubernetes
 logo: https://raw.githubusercontent.com/bianchi2/kube-deployer/master/images/kube.png
 baseUrl: https://raw.githubusercontent.com/bianchi2/kube-deployer/master
@@ -61,7 +65,7 @@ onInstall:
  - getPods
 actions:
   labelNodes:
-    - cmd [${nodes.k8sm.master.id}]: curl ${baseUrl}/scripts/libelnodes.sh | bash
+    - cmd [${nodes.k8sm.master.id}]: curl ${baseUrl}/scripts/labelnodes.sh | bash
     - cmd[${nodes.k8sm.master.id}]: kubectl get node -l=java=zulujdk --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' | awk '{print $1}' | awk -F"-" '{print $1}' | cut -c5-
     - setGlobals:
         zuluNode: ${response.out}
